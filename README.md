@@ -1,2 +1,3 @@
-# zhscript
-Show zhihu users' information directly without mouse over
+# LAZYSCRIPT
+
+Make the world more convenient with scripts :)

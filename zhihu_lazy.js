@@ -15,13 +15,18 @@
 	// Your code here...
 	var currentIndex = 0;
 	var current = document.querySelector("li.current > a");
-	if (current && ["首页", "话题", "发现"].indexOf(current.innerText) >= 0) {
+	if ((current && ["首页", "话题", "发现"].indexOf(current.innerText) >= 0)) {
 		currentIndex = 1;
+	} else {
+		var tab = document.querySelector("div.search-tabs li.active a");
+		if (tab && tab.innerText === "内容") {
+			currentIndex = 1;
+		}
 	}
 
 	var style = document.createElement("style");
 	style.type = "text/css";
-	style.innerHTML = ".following .follow-btn { display: none; } .unfollow .unfollow-btn { display: none; } .bar-item{ display: flex; align-items: center; padding: 2px; border-bottom: 1px solid #ddd; margin-bottom: 2px; } .bar-width{width:200px} .follow-btn, .unfollow-btn{padding:0;margin:0;margin-left:16px;} .bar-item .meta{width: 280px; display: flex; flex-direction: row; margin-right: 10px;} .bar-item .meta a{flex:1;}";
+	style.innerHTML = ".following .follow-btn {display:none;} .unfollow .unfollow-btn {display:none;} .bar-item{height:30px;display:flex; align-items:center; padding:2px;border-bottom:1px solid #ddd;margin-bottom:10px;} .bar-width{width:200px} .follow-btn{color:#fff!important;background:#89c3ff; border:1px solid #ffffff;box-shadow:0 0 0 white inset;} .unfollow-btn{background: #eee; color: #888; border: 1px solid #ddd;} .follow-btn,.unfollow-btn{padding:0;margin:0;margin-left:16px;width:78px; height:26px; line-height:24px; font-size:12px; border-radius: 3px; cursor: pointer; box-sizing: border-box;} .bar-item .metax{display:flex;flex-direction:row;margin-right:10px;flex:1;height:14px;} .bar-item .metax a{color:#466f98;margin-right:20px} .bar-item .metax .key{color:#999;} .bar-item .metax .value{color:#555555;font-weight:bold;}";
 
 	document.getElementsByTagName("head")[0].appendChild(style);
 
@@ -53,21 +58,19 @@
 		});
 	};
 
+
 	var createOP = function(user, answer, doc, follower, isFollowing, gender) {
 
 		var userName = user.substr(user.lastIndexOf("/") + 1, user.length);
 
-		var container = document.createElement("div");
-		container.className = "HoverCard";
-
 		var userCard = document.createElement("div");
-		userCard.className = "HoverCard-item bar-item";
+		userCard.className = "bar-item";
 
-		userCard.innerHTML = '<div class="NumberBoard bar-width"> <a class="Button NumberBoard-item Button--plain" type="button" href="' + user + '/answers"> <div class="NumberBoard-name">回答</div> <div class="NumberBoard-value">' + answer + '</div> </a> <a class="Button NumberBoard-item Button--plain" type="button" href="' + user + '/posts"> <div class="NumberBoard-name">文章</div> <div class="NumberBoard-value">' + doc + '</div> </a> <a class="Button NumberBoard-item Button--plain" type="button" href="' + user + '/followers"> <div class="NumberBoard-name">关注者</div> <div class="NumberBoard-value">' + follower + '</div> </a> </div>';
+		userCard.innerHTML = '<div class="metax"> <a target="_blank" href="' + user + '/answers"> <span class="value">' + answer + '</span> <span class="key">回答</span> </a> <a target="_blank" href="' + user + '/posts"> <span class="value">' + doc + '</span> <span class="key">文章</span> </a> <a target="_blank" href="' + user + '/followers"> <span class="value">' + follower + '</span> <span class="key">关注者</span> </a></div>';
 
 		var btn = document.createElement("div");
 		var followClass = isFollowing ? "following" : "unfollow";
-		btn.className = "MemberButtonGroup ProfileButtonGroup HoverCard-buttons " + followClass;
+		btn.className = followClass;
 		var who = "ta";
 		if (gender === 1) {
 			who = "他";
@@ -77,59 +80,14 @@
 
 		var followingBtn = document.createElement("button");
 		followingBtn.type = "button";
-		followingBtn.setAttribute("class", "Button FollowButton Button--primary Button--grey unfollow-btn");
-		followingBtn.setAttribute("data-username", userName);
-		followingBtn.innerHTML = "<!-- react-text:  -->已关注<!-- /react-text -->";
-		followingBtn.addEventListener("click", unfollow);
-
-		var unfollowedBtn = document.createElement("button");
-		unfollowedBtn.type = "button";
-		unfollowedBtn.setAttribute("class", "Button FollowButton Button--primary Button--blue follow-btn");
-		unfollowedBtn.setAttribute("data-username", userName);
-		unfollowedBtn.innerHTML = "<!-- react-text:  -->关注" + who + "<!-- /react-text -->";
-		unfollowedBtn.addEventListener("click", follow);
-
-		btn.id = "btn_" + userName;
-		btn.appendChild(followingBtn);
-		btn.appendChild(unfollowedBtn);
-		userCard.appendChild(btn);
-		container.appendChild(userCard);
-		return container;
-	};
-
-
-	var createIndexOP = function(user, answer, doc, follower, isFollowing, gender) {
-
-		var userName = user.substr(user.lastIndexOf("/") + 1, user.length);
-
-		var container = document.createElement("div");
-		container.className = "lower clearfix";
-
-		var userCard = document.createElement("div");
-		userCard.className = "HoverCard-item bar-item";
-
-		userCard.innerHTML = '<div class="meta"> <a class="item" target="_blank" href="' + user + '/answers"> <span class="value">' + answer + '</span> <span class="key">回答</span> </a> <a class="item" target="_blank" href="' + user + '/posts"> <span class="value">' + doc + '</span> <span class="key">文章</span> </a> <a class="item" target="_blank" href="' + user + '/followers"> <span class="value">' + follower + '</span> <span class="key">关注者</span> </a></div>';
-
-		var btn = document.createElement("div");
-		var followClass = isFollowing ? "following" : "unfollow";
-		btn.className = "operation " + followClass;
-		var who = "ta";
-		if (gender === 1) {
-			who = "他";
-		} else if (gender === 0) {
-			who = "她";
-		}
-
-		var followingBtn = document.createElement("button");
-		followingBtn.type = "button";
-		followingBtn.setAttribute("class", "zg-btn zg-btn-unfollow zm-rich-follow-btn unfollow-btn");
+		followingBtn.setAttribute("class", "unfollow-btn");
 		followingBtn.setAttribute("data-username", userName);
 		followingBtn.innerHTML = "取消关注";
 		followingBtn.addEventListener("click", unfollow);
 
 		var unfollowedBtn = document.createElement("button");
 		unfollowedBtn.type = "button";
-		unfollowedBtn.setAttribute("class", "zg-btn zg-btn-follow zm-rich-follow-btn follow-btn");
+		unfollowedBtn.setAttribute("class", "follow-btn");
 		unfollowedBtn.setAttribute("data-username", userName);
 		unfollowedBtn.innerHTML = "关注" + who;
 		unfollowedBtn.addEventListener("click", follow);
@@ -138,8 +96,7 @@
 		btn.appendChild(followingBtn);
 		btn.appendChild(unfollowedBtn);
 		userCard.appendChild(btn);
-		container.appendChild(userCard);
-		return container;
+		return userCard;
 	};
 
 	var getUserInfo = function(userlink) {
@@ -159,7 +116,7 @@
 				var answer = data.answer_count;
 				var doc = data.articles_count;
 				var follower = data.follower_count;
-				var op = currentIndex === 1 ? createIndexOP(userPath, answer, doc, follower, is_following, gender) : createOP(userPath, answer, doc, follower, is_following, gender);
+				var op = createOP(userPath, answer, doc, follower, is_following, gender);
 				insertAfter(op, position);
 			})
 			.catch(function(error) {

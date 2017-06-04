@@ -26,7 +26,7 @@
 
 	var style = document.createElement("style");
 	style.type = "text/css";
-	style.innerHTML = ".following .follow-btn {display:none;} .unfollow .unfollow-btn {display:none;} .bar-item{height:30px;display:flex; align-items:center; padding:2px;border-bottom:1px solid #ddd;margin-bottom:10px;} .bar-width{width:200px} .follow-btn{color:#fff!important;background:#89c3ff; border:1px solid #ffffff;box-shadow:0 0 0 white inset;} .unfollow-btn{background: #eee; color: #888; border: 1px solid #ddd;} .follow-btn,.unfollow-btn{padding:0;margin:0;margin-left:16px;width:78px; height:26px; line-height:24px; font-size:12px; border-radius: 3px; cursor: pointer; box-sizing: border-box;} .bar-item .metax{display:flex;flex-direction:row;margin-right:10px;flex:1;height:14px;} .bar-item .metax a{color:#466f98;margin-right:20px} .bar-item .metax .key{color:#999;} .bar-item .metax .value{color:#555555;font-weight:bold;}";
+	style.innerHTML = ".following .follow-btn {display:none;} .unfollow .unfollow-btn {display:none;} .bar-item{position:relative;height:36px;display:flex; align-items: flex-end; padding:2px;border-bottom:1px solid #ddd;margin-bottom:10px;} .bar-width{width:200px} .follow-btn{color:#fff!important;background:#89c3ff; border:1px solid #ffffff;box-shadow:0 0 0 white inset;} .unfollow-btn{background: #eee; color: #888; border: 1px solid #ddd;} .follow-btn,.unfollow-btn{padding:0;margin:0;margin-left:16px;width:78px; height:26px; line-height:24px; font-size:12px; border-radius: 3px; cursor: pointer; box-sizing: border-box;} .bar-item .metax{display:flex;flex-direction:row;margin-right:10px;flex:1;height:20px;} .bar-item .metax a{color:#466f98;margin-right:20px} .bar-item .metax .key{color:#999;} .bar-item .metax .value{color:#555555;font-weight:bold;} .x-avatar{width:40px;height:40px;background:#ddd;position: absolute; right: 88px; bottom: 3px; border-radius: 3px;}";
 
 	document.getElementsByTagName("head")[0].appendChild(style);
 
@@ -59,7 +59,14 @@
 	};
 
 
-	var createOP = function(user, answer, doc, follower, isFollowing, gender) {
+	var createOP = function(user, data, sourceType) {
+
+		var isFollowing = data.is_following;
+		var gender = data.gender;
+		var answer = data.answer_count;
+		var doc = data.articles_count;
+		var follower = data.follower_count;
+		var avatarUrl = data.avatar_url_template.replace("{size}","l");
 
 		var userName = user.substr(user.lastIndexOf("/") + 1, user.length);
 
@@ -71,11 +78,18 @@
 		var btn = document.createElement("div");
 		var followClass = isFollowing ? "following" : "unfollow";
 		btn.className = followClass;
-		var who = "ta";
+		var who = " Ta";
 		if (gender === 1) {
 			who = "他";
 		} else if (gender === 0) {
 			who = "她";
+		}
+
+		if(sourceType===1){
+			var avatar = document.createElement("img");
+			avatar.className = "x-avatar";
+			avatar.setAttribute("src", avatarUrl);
+			userCard.appendChild(avatar);
 		}
 
 		var followingBtn = document.createElement("button");
@@ -101,8 +115,18 @@
 
 	var getUserInfo = function(userlink) {
 		var userPath = userlink.getAttribute("href");
+		var displayName = userlink.innerText;
 		var userName = userPath.substr(userPath.lastIndexOf("/") + 1, userPath.length);
 		var position = userlink.closest(".AuthorInfo");
+		var sourceType = 0;
+		try {
+			var feedSource = userlink.closest(".feed-main").querySelector(".feed-source").innerText;
+			if(feedSource.indexOf(displayName) < 0){
+				sourceType = 1;
+			}
+		}catch(error){
+
+		}
 		if (currentIndex === 1) {
 			position = userlink.closest(".summary-wrapper");
 		}
@@ -110,13 +134,11 @@
 		axios.get('/api/v4/members/' + userName + '?include=allow_message%2Cis_followed%2Cis_following%2Cis_org%2Cis_blocking%2Cemployments%2Canswer_count%2Cfollower_count%2Carticles_count%2Cgender%2Cbadge%5B%3F(type%3Dbest_answerer)%5D.topics')
 			.then(function(rsp) {
 				var data = rsp.data;
+				if(!data){
+					return;
+				}
 				// console.log(data);
-				var is_following = data.is_following;
-				var gender = data.gender;
-				var answer = data.answer_count;
-				var doc = data.articles_count;
-				var follower = data.follower_count;
-				var op = createOP(userPath, answer, doc, follower, is_following, gender);
+				var op = createOP(userPath, data, sourceType);
 				insertAfter(op, position);
 			})
 			.catch(function(error) {

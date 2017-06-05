@@ -14,14 +14,28 @@
 
 	// Your code here...
 	var currentIndex = 0;
-	var current = document.querySelector("li.current > a");
-	if ((current && ["首页", "话题", "发现"].indexOf(current.innerText) >= 0)) {
+	var pathname = window.location.pathname;
+	var search = window.location.search;
+	var showAvatar = false;
+	var normalList = ['/collection', '/topic', '/explore'];
+
+	if (pathname === '/' ||
+		(currentIndex === 0 && pathname === '/search' && search.indexOf("type=content") > 0)) {
 		currentIndex = 1;
 	} else {
-		var tab = document.querySelector("div.search-tabs li.active a");
-		if (tab && tab.innerText === "内容") {
-			currentIndex = 1;
+		for (var i = 0; i < normalList.length; i++) {
+			if (pathname.indexOf(normalList[i]) === 0) {
+				currentIndex = 1;
+			}
 		}
+	}
+
+	if ((pathname === '/search' && search.indexOf("type=content") > 0) ||
+		(pathname === '/explore') ||
+		(pathname === '/topic') ||
+		(pathname.indexOf('/collection') === 0)
+	) {
+		showAvatar = true;
 	}
 
 	var style = document.createElement("style");
@@ -66,7 +80,7 @@
 		var answer = data.answer_count;
 		var doc = data.articles_count;
 		var follower = data.follower_count;
-		var avatarUrl = data.avatar_url_template.replace("{size}","l");
+		var avatarUrl = data.avatar_url_template.replace("{size}", "l");
 
 		var userName = user.substr(user.lastIndexOf("/") + 1, user.length);
 
@@ -85,7 +99,7 @@
 			who = "她";
 		}
 
-		if(sourceType===1){
+		if (sourceType === 1 || showAvatar) {
 			var avatar = document.createElement("img");
 			avatar.className = "x-avatar";
 			avatar.setAttribute("src", avatarUrl);
@@ -121,10 +135,10 @@
 		var sourceType = 0;
 		try {
 			var feedSource = userlink.closest(".feed-main").querySelector(".feed-source").innerText;
-			if(feedSource.indexOf(displayName) < 0){
+			if (feedSource.indexOf(displayName) < 0) {
 				sourceType = 1;
 			}
-		}catch(error){
+		} catch (error) {
 
 		}
 		if (currentIndex === 1) {
@@ -134,7 +148,7 @@
 		axios.get('/api/v4/members/' + userName + '?include=allow_message%2Cis_followed%2Cis_following%2Cis_org%2Cis_blocking%2Cemployments%2Canswer_count%2Cfollower_count%2Carticles_count%2Cgender%2Cbadge%5B%3F(type%3Dbest_answerer)%5D.topics')
 			.then(function(rsp) {
 				var data = rsp.data;
-				if(!data){
+				if (!data) {
 					return;
 				}
 				// console.log(data);

@@ -92,12 +92,6 @@
 		var btn = document.createElement("div");
 		var followClass = isFollowing ? "following" : "unfollow";
 		btn.className = followClass;
-		var who = " Ta";
-		if (gender === 1) {
-			who = "他";
-		} else if (gender === 0) {
-			who = "她";
-		}
 
 		if (sourceType === 1 || showAvatar) {
 			var avatar = document.createElement("img");
@@ -117,6 +111,18 @@
 		unfollowedBtn.type = "button";
 		unfollowedBtn.setAttribute("class", "follow-btn");
 		unfollowedBtn.setAttribute("data-username", userName);
+		var who = " Ta";
+		if (gender === 1) {
+			who = "他";
+			userCard.style.borderBottomColor = '#89c3ff';
+			unfollowedBtn.style.cssText = "border:1px solid #89c3ff;";
+			followingBtn.style.cssText = "border:1px solid #89c3ff;";
+		} else if (gender === 0) {
+			who = "她";
+			userCard.style.borderBottomColor = '#ff65a1';
+			unfollowedBtn.style.cssText = "border:1px solid #ff65a1;background-color:#ff65a1;";
+			followingBtn.style.cssText = "border:1px solid #ff65a1;";
+		}
 		unfollowedBtn.innerHTML = "关注" + who;
 		unfollowedBtn.addEventListener("click", follow);
 

@@ -1,11 +1,16 @@
 // ==UserScript==
-// @name         zhihu_lay 0.2
+// @name         zhihu_lay 0.5
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  try to take over the world!
 // @author       You
 // @require      https://cdnjs.cloudflare.com/ajax/libs/axios/0.16.1/axios.min.js
-// @match        https://*.zhihu.com/*
+// @match        https://www.zhihu.com
+// @match        https://www.zhihu.com/topic*
+// @match        https://www.zhihu.com/explore
+// @match        https://www.zhihu.com/collection/*
+// @match        https://www.zhihu.com/question/*/answer/*
+// @match        https://www.zhihu.com/search?*type=content*
 // @grant        none
 // ==/UserScript==
 

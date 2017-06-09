@@ -18,22 +18,17 @@
 	'use strict';
 
 	// Your code here...
-	var currentIndex = 0;
 	var pathname = window.location.pathname;
 	var search = window.location.search;
 	var showAvatar = false;
 	var normalList = ['/collection', '/topic', '/explore'];
-
-	if (pathname === '/' ||
-		(currentIndex === 0 && pathname === '/search' && search.indexOf("type=content") > 0)) {
-		currentIndex = 1;
-	} else {
-		for (var i = 0; i < normalList.length; i++) {
-			if (pathname.indexOf(normalList[i]) === 0) {
-				currentIndex = 1;
-			}
-		}
-	}
+	var matchRules = [
+		".summary-wrapper a.author-link",
+		"div.AuthorInfo-content div[aria-haspopup='true'] > a",
+		"div.entry-meta a.author",
+		"div.author-info a.author-link"
+		// "div.PostIndex-author a.PostIndex-authorName",
+	];
 
 	if ((pathname === '/search' && search.indexOf("type=content") > 0) ||
 		(pathname === '/explore') ||
@@ -92,7 +87,13 @@
 		var userCard = document.createElement("div");
 		userCard.className = "bar-item";
 
-		userCard.innerHTML = '<div class="metax"> <a target="_blank" href="' + user + '/answers"> <span class="value">' + answer + '</span> <span class="key">回答</span> </a> <a target="_blank" href="' + user + '/posts"> <span class="value">' + doc + '</span> <span class="key">文章</span> </a> <a target="_blank" href="' + user + '/followers"> <span class="value">' + follower + '</span> <span class="key">关注者</span> </a></div>';
+		userCard.innerHTML = '<div class="metax"> <a target="_blank" href="' + user 
+			+ '/answers"> <span class="value">' + answer 
+			+ '</span> <span class="key">回答</span> </a> <a target="_blank" href="' + user 
+			+ '/posts"> <span class="value">' + doc 
+			+ '</span> <span class="key">文章</span> </a> <a target="_blank" href="' + user 
+			+ '/followers"> <span class="value">' + follower 
+			+ '</span> <span class="key">关注者</span> </a></div>';
 
 		var btn = document.createElement("div");
 		var followClass = isFollowing ? "following" : "unfollow";
@@ -142,7 +143,10 @@
 		var userPath = userlink.getAttribute("href");
 		var displayName = userlink.innerText;
 		var userName = userPath.substr(userPath.lastIndexOf("/") + 1, userPath.length);
-		var position = userlink.closest(".AuthorInfo");
+		var position = userlink.closest("div");
+		if (userlink.closest(".AuthorInfo")) {
+			position = userlink.closest(".AuthorInfo");
+		}
 		var sourceType = 0;
 		try {
 			var feedSource = userlink.closest(".feed-main").querySelector(".feed-source").innerText;
@@ -151,9 +155,6 @@
 			}
 		} catch (error) {
 
-		}
-		if (currentIndex === 1) {
-			position = userlink.closest(".summary-wrapper");
 		}
 		position.classList.add("bain");
 		axios.get('/api/v4/members/' + userName + '?include=allow_message%2Cis_followed%2Cis_following%2Cis_org%2Cis_blocking%2Cemployments%2Canswer_count%2Cfollower_count%2Carticles_count%2Cgender%2Cbadge%5B%3F(type%3Dbest_answerer)%5D.topics')
@@ -175,9 +176,10 @@
 		referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 	};
 
-	var countUser = function(list, num) {
+	var countUser = function(list) {
 		for (var i = 0; i < list.length; i++) {
 			var userlink = list[i];
+			console.log(userlink);
 			if (!userlink.closest(".bain")) {
 				getUserInfo(userlink);
 			}
@@ -186,23 +188,24 @@
 
 	var queryUserList = function() {
 		var userList = [];
-		if (currentIndex === 1) {
-			userList = document.querySelectorAll(".summary-wrapper a.author-link");
-		} else {
-			userList = document.querySelectorAll("div.AuthorInfo-content div[aria-haspopup='true'] > a");
+		for (var i = 0; i < matchRules.length; i++) {
+			var list = Array.prototype.slice.call(document.querySelectorAll(matchRules[i]));
+			if (list && list.length > 0) {
+				userList = userList.concat(list);
+			}
 		}
 		return userList;
 	};
 
 	var userLinkList = queryUserList();
 	var userLength = userLinkList.length;
-	countUser(userLinkList, userLength);
+	countUser(userLinkList);
 
 	setInterval(function() {
 		userLinkList = queryUserList();
 		// console.log(userLinkList.length, userLength);
 		if (userLinkList.length > userLength) {
-			countUser(userLinkList, userLinkList.length - userLength);
+			countUser(userLinkList);
 			userLength = userLinkList.length;
 		}
 	}, 3000);

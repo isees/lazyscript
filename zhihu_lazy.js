@@ -9,7 +9,7 @@
 // @match        https://www.zhihu.com/topic*
 // @match        https://www.zhihu.com/explore
 // @match        https://www.zhihu.com/collection/*
-// @match        https://www.zhihu.com/question/*/answer/*
+// @match        https://www.zhihu.com/question/*
 // @match        https://www.zhihu.com/search?*type=content*
 // @grant        none
 // ==/UserScript==

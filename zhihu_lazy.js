@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         zhihu_lay 0.5
+// @name         zhihu_lay 
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.6
 // @description  try to take over the world!
 // @author       You
 // @require      https://cdnjs.cloudflare.com/ajax/libs/axios/0.16.1/axios.min.js
@@ -29,6 +29,24 @@
 		"div.author-info a.author-link"
 		// "div.PostIndex-author a.PostIndex-authorName",
 	];
+
+	var onclickRules = [
+		".hidden-expanded",
+		"div.summary"
+	];
+
+	var addClickMark = function() {
+		var nodes = [];
+		for (var i = 0; i < onclickRules.length; i++) {
+			var list = Array.prototype.slice.call(document.querySelectorAll(onclickRules[i]));
+			if (list && list.length > 0) {
+				nodes = nodes.concat(list);
+			}
+		}
+		for (var j = 0; j < nodes.length; j++) {
+			nodes[j].setAttribute("onclick", "");
+		}
+	};
 
 	if ((pathname === '/search' && search.indexOf("type=content") > 0) ||
 		(pathname === '/explore') ||
@@ -87,13 +105,13 @@
 		var userCard = document.createElement("div");
 		userCard.className = "bar-item";
 
-		userCard.innerHTML = '<div class="metax"> <a target="_blank" href="' + user 
-			+ '/answers"> <span class="value">' + answer 
-			+ '</span> <span class="key">回答</span> </a> <a target="_blank" href="' + user 
-			+ '/posts"> <span class="value">' + doc 
-			+ '</span> <span class="key">文章</span> </a> <a target="_blank" href="' + user 
-			+ '/followers"> <span class="value">' + follower 
-			+ '</span> <span class="key">关注者</span> </a></div>';
+		userCard.innerHTML = '<div class="metax"> <a target="_blank" href="' + user +
+			'/answers"> <span class="value">' + answer +
+			'</span> <span class="key">回答</span> </a> <a target="_blank" href="' + user +
+			'/posts"> <span class="value">' + doc +
+			'</span> <span class="key">文章</span> </a> <a target="_blank" href="' + user +
+			'/followers"> <span class="value">' + follower +
+			'</span> <span class="key">关注者</span> </a></div>';
 
 		var btn = document.createElement("div");
 		var followClass = isFollowing ? "following" : "unfollow";
@@ -179,7 +197,6 @@
 	var countUser = function(list) {
 		for (var i = 0; i < list.length; i++) {
 			var userlink = list[i];
-			console.log(userlink);
 			if (!userlink.closest(".bain")) {
 				getUserInfo(userlink);
 			}
@@ -197,17 +214,17 @@
 		return userList;
 	};
 
-	var userLinkList = queryUserList();
-	var userLength = userLinkList.length;
-	countUser(userLinkList);
-
-	setInterval(function() {
+	var userLinkList = [];
+	var userLength = 0;
+	var run = function() {
 		userLinkList = queryUserList();
-		// console.log(userLinkList.length, userLength);
 		if (userLinkList.length > userLength) {
+			addClickMark();
 			countUser(userLinkList);
 			userLength = userLinkList.length;
 		}
-	}, 3000);
+		setTimeout(run, 3000);
+	};
+	run();
 
 })();

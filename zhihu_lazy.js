@@ -136,6 +136,7 @@
 		unfollowedBtn.setAttribute("class", "follow-btn");
 		unfollowedBtn.setAttribute("data-username", userName);
 		var who = " Ta";
+        console.log("gender: "+gender);
 		if (gender === 1) {
 			who = "他";
 			userCard.style.borderBottomColor = '#89c3ff';
@@ -146,7 +147,11 @@
 			userCard.style.borderBottomColor = '#ff65a1';
 			unfollowedBtn.style.cssText = "border:1px solid #ff65a1;background-color:#ff65a1;";
 			followingBtn.style.cssText = "border:1px solid #ff65a1;";
-		}
+		} else {
+            userCard.style.borderBottomColor = '#c7a12c';
+			unfollowedBtn.style.cssText = "border:1px solid #c7a12c;background-color:#c7a12c;";
+			followingBtn.style.cssText = "border:1px solid #c7a12c;";
+        }
 		unfollowedBtn.innerHTML = "关注" + who;
 		unfollowedBtn.addEventListener("click", follow);
 

@@ -5,15 +5,16 @@
 // @description  try to take over the world!
 // @author       You
 // @match        https://github.com/*
+// @noframes     ignore iframes
 // @grant        none
 // ==/UserScript==
 
 (function() {
-	'use strict';
+  "use strict";
 
-	// Your code here...
-	var detail = document.querySelector(".overall-summary ~ .details-reset");
-	if(detail!=null){
-		detail.setAttribute("open", "");
-	}
+  // Your code here...
+  var detail = document.querySelector(".overall-summary ~ .details-reset");
+  if (detail != null) {
+    detail.setAttribute("open", "");
+  }
 })();

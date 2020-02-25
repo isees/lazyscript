@@ -56,11 +56,9 @@
     notice.click();
   };
 
-  var index = 0;
   var run = function() {
     addClickMark();
     newNoticeClick();
-    console.log(index++);
     setTimeout(run, interval);
   };
   run();

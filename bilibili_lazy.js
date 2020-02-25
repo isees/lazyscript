@@ -26,6 +26,7 @@
   var queryMatchedNodes = function() {
     var nodes = [];
     for (var i = 0; i < onclickRules.length; i++) {
+      // console.log(onclickRules);
       var list = Array.prototype.slice.call(
         document.querySelectorAll(onclickRules[i])
       );
@@ -41,6 +42,7 @@
     if (matchedNodes.length > matchedLength) {
       matchedLength = matchedNodes.length;
       for (var j = 0; j < nodes.length; j++) {
+        // console.log(nodes);
         nodes[j].setAttribute("onclick", "");
       }
     }
@@ -54,14 +56,12 @@
     notice.click();
   };
 
-  var run = async function() {
-    while (true) {
-      addClickMark();
-      newNoticeClick();
-      await new Promise(r => setTimeout(r, interval));
-    }
+  var index = 0;
+  var run = function() {
+    addClickMark();
+    newNoticeClick();
+    console.log(index++);
     setTimeout(run, interval);
   };
-
   run();
 })();

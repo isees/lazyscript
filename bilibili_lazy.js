@@ -37,13 +37,12 @@
     return nodes;
   };
 
-  var addClickMark = function(nodes) {
+  var addClickMark = function() {
     var matchedNodes = queryMatchedNodes();
     if (matchedNodes.length > matchedLength) {
       matchedLength = matchedNodes.length;
-      for (var j = 0; j < nodes.length; j++) {
-        // console.log(nodes);
-        nodes[j].setAttribute("onclick", "");
+      for (var j = 0; j < matchedNodes.length; j++) {
+        matchedNodes[j].setAttribute("onclick", "");
       }
     }
   };

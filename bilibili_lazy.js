@@ -26,7 +26,6 @@
   var queryMatchedNodes = function() {
     var nodes = [];
     for (var i = 0; i < onclickRules.length; i++) {
-      // console.log(onclickRules);
       var list = Array.prototype.slice.call(
         document.querySelectorAll(onclickRules[i])
       );
